@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Orientační kalkulačka ceny služby Hlídání psů Jičín.">
+  <title>Kalkulačka ceny | Hlídání psů Jičín</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="calculator" aria-labelledby="page-title">
+      <header class="hero">
+        <div class="paw" aria-hidden="true">🐾</div>
+        <p class="eyebrow">Hlídání psů Jičín</p>
+        <h1 id="page-title">Spočítejte si orientační cenu</h1>
+        <p class="lead">Vyberte službu a doplňte potřebné údaje. Cena se přepočítá automaticky.</p>
+      </header>
+
+      <section class="panel" aria-labelledby="service-heading">
+        <h2 id="service-heading">1. Jakou službu potřebujete?</h2>
+        <div class="card-grid service-grid" role="radiogroup" aria-label="Výběr služby">
+          <label class="choice-card selected">
+            <input type="radio" name="service" value="home" checked>
+            <span class="choice-icon" aria-hidden="true">🏡</span>
+            <span class="choice-title">Hlídání u nás doma</span>
+            <span class="choice-text">Domácí prostředí bez cestovného.</span>
+          </label>
+
+          <label class="choice-card">
+            <input type="radio" name="service" value="owner">
+            <span class="choice-icon" aria-hidden="true">🏠</span>
+            <span class="choice-title">Hlídání u majitele</span>
+            <span class="choice-text">Pouze o víkendu, s cestovným mimo Jičín.</span>
+          </label>
+
+          <label class="choice-card">
+            <input type="radio" name="service" value="walk">
+            <span class="choice-icon" aria-hidden="true">🐕</span>
+            <span class="choice-title">Venčení</span>
+            <span class="choice-text">Jednorázově nebo po více dní.</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="panel" id="home-owner-fields" aria-labelledby="stay-heading">
+        <h2 id="stay-heading">2. Údaje o hlídání</h2>
+
+        <div id="size-section">
+          <p class="field-label">Velikost pejska</p>
+          <div class="card-grid size-grid" role="radiogroup" aria-label="Velikost psa">
+            <label class="choice-card compact selected">
+              <input type="radio" name="dogSize" value="small" checked>
+              <span class="choice-icon" aria-hidden="true">🐶</span>
+              <span class="choice-title">Do 10 kg</span>
+              <span class="choice-price">300 Kč / 24 h</span>
+            </label>
+            <label class="choice-card compact">
+              <input type="radio" name="dogSize" value="medium">
+              <span class="choice-icon" aria-hidden="true">🐕</span>
+              <span class="choice-title">11–25 kg</span>
+              <span class="choice-price">400 Kč / 24 h</span>
+            </label>
+            <label class="choice-card compact">
+              <input type="radio" name="dogSize" value="large">
+              <span class="choice-icon" aria-hidden="true">🦮</span>
+              <span class="choice-title">Nad 25 kg</span>
+              <span class="choice-price">600 Kč / 24 h</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>Datum a čas předání</span>
+            <input type="datetime-local" id="startDateTime">
+          </label>
+          <label class="field">
+            <span>Datum a čas vyzvednutí</span>
+            <input type="datetime-local" id="endDateTime">
+          </label>
+        </div>
+
+        <label class="field" id="owner-km-field" hidden>
+          <span>Počet kilometrů mimo Jičín</span>
+          <input type="number" id="ownerKm" min="0" step="1" value="0" inputmode="numeric">
+          <small>Zadejte vzdálenost, ze které se má cestovné počítat.</small>
+        </label>
+      </section>
+
+      <section class="panel" id="walk-fields" aria-labelledby="walk-heading" hidden>
+        <h2 id="walk-heading">2. Údaje o venčení</h2>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>Datum od</span>
+            <input type="date" id="walkStart">
+          </label>
+          <label class="field">
+            <span>Datum do</span>
+            <input type="date" id="walkEnd">
+          </label>
+        </div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>Kolikrát denně?</span>
+            <select id="walksPerDay">
+              <option value="1">1× denně</option>
+              <option value="2">2× denně</option>
+              <option value="3">3× denně</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Počet kilometrů mimo Jičín</span>
+            <input type="number" id="walkKm" min="0" step="1" value="0" inputmode="numeric">
+          </label>
+        </div>
+
+        <p class="helper">Jedno venčení stojí 150 Kč. Cestovné se připočítá ke každému výjezdu.</p>
+      </section>
+
+      <section class="result-card" aria-live="polite" aria-labelledby="result-heading">
+        <div class="result-top">
+          <div>
+            <p class="eyebrow">Průběžný výpočet</p>
+            <h2 id="result-heading">Orientační cena</h2>
+          </div>
+          <div class="result-paw" aria-hidden="true">🐾</div>
+        </div>
+
+        <div id="empty-state" class="empty-state">
+          Doplňte termín nebo údaje o venčení a zde se zobrazí výpočet.
+        </div>
+
+        <div id="calculation" hidden>
+          <dl class="summary-list">
+            <div>
+              <dt>Služba</dt>
+              <dd id="summaryService">—</dd>
+            </div>
+            <div>
+              <dt>Rozsah</dt>
+              <dd id="summaryDuration">—</dd>
+            </div>
+            <div>
+              <dt>Základní cena</dt>
+              <dd id="summaryBase">0 Kč</dd>
+            </div>
+            <div id="discount-row">
+              <dt>Sleva 10 %</dt>
+              <dd id="summaryDiscount">−0 Kč</dd>
+            </div>
+            <div id="travel-row">
+              <dt>Cestovné</dt>
+              <dd id="summaryTravel">0 Kč</dd>
+            </div>
+          </dl>
+
+          <div class="total-row">
+            <span>Celkem</span>
+            <strong id="summaryTotal">0 Kč</strong>
+          </div>
+
+          <p id="formula" class="formula"></p>
+
+          <a id="reserveButton" class="primary-button" href="#" target="_blank" rel="noopener">
+            Nezávazně rezervovat
+          </a>
+        </div>
+
+        <p id="error-message" class="error-message" role="alert" hidden></p>
+      </section>
+
+      <section class="next-steps">
+        <h2>Co bude následovat?</h2>
+        <div class="steps">
+          <div><span>1</span><p>Vyplníte rezervační formulář.</p></div>
+          <div><span>2</span><p>Ověřím dostupnost termínu.</p></div>
+          <div><span>3</span><p>Domluvíme seznamovací procházku.</p></div>
+        </div>
+      </section>
+
+      <aside class="contact-box">
+        <div>
+          <strong>Nejste si jistí výpočtem?</strong>
+          <p>Ráda vám poradím podle konkrétního termínu a potřeb pejska.</p>
+        </div>
+        <div class="contact-actions">
+          <a href="tel:+420737544999">Zavolat</a>
+          <a href="https://wa.me/420737544999" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+      </aside>
+
+      <p class="legal-note">
+        Uvedená cena je orientační. Konečná cena bude potvrzena při domluvě rezervace.
+      </p>
+    </section>
+  </main>
+
+  <script src="prices.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
