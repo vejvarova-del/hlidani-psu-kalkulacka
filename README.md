@@ -1,34 +1,16 @@
-# Hlídání psů Jičín – Kalkulačka 2.0
+# Hlídání psů Jičín – Kalkulačka 2.2
 
-Webová kalkulačka orientační ceny pro služby Hlídání psů Jičín.
+## Výpočet hlídání
 
-## Soubory
+- do 2 hodin: hodinová sazba,
+- nad 2 do 12 hodin: sazba do 12 hodin,
+- nad 12 do 24 hodin: sazba do 24 hodin,
+- po každých celých 24 hodinách:
+  - do 2 hodin navíc bez doplatku,
+  - nad 2 do 12 hodin navíc poloviční denní sazba,
+  - nad 12 hodin navíc celá denní sazba,
+- sleva 10 % od 5 celých 24hodinových dnů.
 
-- `index.html` – obsah stránky
-- `style.css` – vzhled
-- `prices.js` – ceník a nastavení výpočtů
-- `script.js` – logika kalkulačky
+## Nahrání na GitHub
 
-## Úprava cen
-
-Ceny se mění pouze v souboru `prices.js`.
-
-## Zveřejnění přes GitHub Pages
-
-1. Nahraj všechny soubory do hlavní větve repozitáře.
-2. Otevři `Settings`.
-3. V levém menu otevři `Pages`.
-4. V části `Build and deployment` vyber `Deploy from a branch`.
-5. Nastav větev `main` a složku `/ (root)`.
-6. Klikni na `Save`.
-
-Veřejná stránka bude obvykle na adrese:
-
-`https://vejvarova-del.github.io/hlidani-psu-kalkulacka/`
-
-## Poznámka k výpočtu pobytu
-
-- Každých celých 24 hodin se účtuje plná denní sazba.
-- Zbývající část pobytu po celých 24 hodinách se účtuje jako polovina denní sazby.
-- Sleva 10 % se uplatní od 5 celých 24hodinových úseků.
-- U hlídání u majitele a venčení se připočítává cestovné 10 Kč/km.
+Nahrajte všechny soubory do kořenové složky repozitáře a potvrďte `Commit changes`.
