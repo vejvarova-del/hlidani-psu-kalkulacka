@@ -102,13 +102,13 @@
     errorMessage.textContent = message;
   }
 
-  function getStayPricePer24Hours(service) {
+  function getStayPriceTable(service) {
     if (service === "owner") {
-      return PRICES.owner.per24Hours;
+      return PRICES.owner;
     }
 
     const size = getCheckedValue("dogSize");
-    return PRICES.home[size] ?? 0;
+    return PRICES.home[size];
   }
 
   function calculateStay(service) {
@@ -131,20 +131,52 @@
     }
 
     const totalHours = (end - start) / MS_PER_HOUR;
-    const fullDays = Math.floor(totalHours / 24);
-    const remainingHours = totalHours - fullDays * 24;
+    const price = getStayPriceTable(service);
 
-    // Každých celých 24 hodin = celý den.
-    // Zbytek po celých 24 hodinách = půl denní sazby.
-    // U pobytu kratšího než 24 hodin se použije půldenní sazba.
-    const halfDay = remainingHours > 0 || fullDays === 0;
-    const pricePerDay = getStayPricePer24Hours(service);
+    let fullDays = 0;
+    let remainingHours = 0;
+    let basePrice = 0;
+    let durationLabel = "";
+    let formulaText = "";
 
-    const fullDayPrice = fullDays * pricePerDay;
-    const halfDayPrice = halfDay ? pricePerDay * PRICES.halfDayShare : 0;
-    const basePrice = fullDayPrice + halfDayPrice;
+    // Pobyt do 24 hodin se počítá přesně podle ceníku.
+    if (totalHours <= 1) {
+      basePrice = price.perHour;
+      durationLabel = "do 1 hodiny";
+      formulaText = `hodinová sazba ${formatPrice(price.perHour)}`;
+    } else if (totalHours <= 12) {
+      basePrice = price.upTo12Hours;
+      durationLabel = "nad 1 hodinu až 12 hodin";
+      formulaText = `sazba do 12 hodin ${formatPrice(price.upTo12Hours)}`;
+    } else if (totalHours <= 24) {
+      basePrice = price.per24Hours;
+      durationLabel = "nad 12 hodin až 24 hodin";
+      formulaText = `sazba do 24 hodin ${formatPrice(price.per24Hours)}`;
+    } else {
+      fullDays = Math.floor(totalHours / 24);
+      remainingHours = totalHours - fullDays * 24;
 
-    // Sleva vzniká od 5 celých 24hodinových úseků.
+      basePrice = fullDays * price.per24Hours;
+
+      const durationParts = [`${fullDays}× 24 hodin`];
+      const formulaParts = [`${fullDays} × ${formatPrice(price.per24Hours)}`];
+
+      if (remainingHours > 0 && remainingHours <= 12) {
+        const halfDayPrice = price.per24Hours * PRICES.halfDayShare;
+        basePrice += halfDayPrice;
+        durationParts.push(`do 12 hodin navíc`);
+        formulaParts.push(`½ dne ${formatPrice(halfDayPrice)}`);
+      } else if (remainingHours > 12) {
+        basePrice += price.per24Hours;
+        durationParts.push(`více než 12 hodin navíc`);
+        formulaParts.push(`1 celý den ${formatPrice(price.per24Hours)}`);
+      }
+
+      durationLabel = durationParts.join(" + ");
+      formulaText = formulaParts.join(" + ");
+    }
+
+    // Sleva 10 % se uplatní od 5 celých 24hodinových úseků.
     const discount =
       fullDays >= PRICES.discountFromFullDays
         ? basePrice * PRICES.discountRate
@@ -157,37 +189,21 @@
     const serviceLabel =
       service === "home" ? "Hlídání u nás doma" : "Hlídání u majitele";
 
-    const durationParts = [];
-    if (fullDays > 0) {
-      durationParts.push(`${fullDays}× 24 hodin`);
-    }
-    if (halfDay) {
-      durationParts.push("půlden navíc");
-    }
-
-    const formulaParts = [];
-    if (fullDays > 0) {
-      formulaParts.push(`${fullDays} × ${formatPrice(pricePerDay)}`);
-    }
-    if (halfDay) {
-      formulaParts.push(`½ dne × ${formatPrice(pricePerDay)}`);
-    }
-
     renderResult({
       serviceLabel,
-      durationLabel: durationParts.join(" + "),
+      durationLabel,
       basePrice,
       discount,
       travel,
       total,
       formulaText:
-        `${formulaParts.join(" + ")}` +
+        formulaText +
         (discount > 0 ? ` − sleva ${formatPrice(discount)}` : "") +
         (travel > 0 ? ` + cestovné ${formatPrice(travel)}` : ""),
       formText: [
         `Služba: ${serviceLabel}`,
         `Termín: ${formatDateForForm(startDateTime.value)} – ${formatDateForForm(endDateTime.value)}`,
-        `Rozsah: ${durationParts.join(" + ")}`,
+        `Rozsah: ${durationLabel}`,
         `Základní cena: ${formatPrice(basePrice)}`,
         discount > 0 ? `Sleva 10 %: −${formatPrice(discount)}` : "",
         travel > 0 ? `Cestovné: ${formatPrice(travel)}` : "",

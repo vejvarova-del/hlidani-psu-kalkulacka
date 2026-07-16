@@ -3,12 +3,26 @@
 
 const PRICES = Object.freeze({
   home: Object.freeze({
-    small: 300,
-    medium: 400,
-    large: 600
+    small: Object.freeze({
+      perHour: 50,
+      upTo12Hours: 150,
+      per24Hours: 300
+    }),
+    medium: Object.freeze({
+      perHour: 50,
+      upTo12Hours: 200,
+      per24Hours: 400
+    }),
+    large: Object.freeze({
+      perHour: 50,
+      upTo12Hours: 300,
+      per24Hours: 600
+    })
   }),
 
   owner: Object.freeze({
+    perHour: 100,
+    upTo12Hours: 400,
     per24Hours: 800
   }),
 
